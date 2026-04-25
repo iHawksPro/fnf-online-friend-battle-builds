@@ -26,6 +26,8 @@
 
 ## Fixes
 
+- Repacked the friend build with the game files at the zip root.
+- Added `! RUN HAWKS FNF.bat` so missing `manifest/default.json` or shared assets are caught before Lime starts.
 - Tightened the oversized custom menu and Online Battle UI.
 - Prevented stale Online Battle callbacks from crashing after switching into gameplay.
 - Closes stale quick-match and started lobbies when players disconnect.
@@ -36,4 +38,4 @@
 - Windows release build passed.
 - Server smoke test passed locally.
 - Server smoke test passed through the current Cloudflare tunnel.
-- Packaged game was launched and was responding after rebuild.
+- Friend zip contains `PsychEngine.exe`, `manifest/default.json`, shared assets, Darkness Takeover mods, and the extract-first launcher at the zip root.

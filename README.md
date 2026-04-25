@@ -10,7 +10,9 @@ Download the full ready-to-send Windows build from the Releases page:
 
 - `Hawks-FNF-Multiplayer-Darkness-Takeover-SEND-TO-FRIEND.zip`
 
-That zip contains the complete `Hawks FNF Multiplayer Mod` folder. Extract it and run `PsychEngine.exe`.
+That zip contains the complete game files at the zip root. Extract the whole zip first, then run `! RUN HAWKS FNF.bat`.
+
+The launcher checks that `manifest/default.json` and the shared assets are beside `PsychEngine.exe` before starting. If Windows shows `There is no asset library with an ID of "default"`, the zip was not extracted as a whole or only the exe was copied.
 
 ## Included Mod Songs
 
@@ -54,4 +56,4 @@ The Cloudflare launcher starts the local relay, creates a temporary tunnel, writ
 
 - Windows game build completed successfully.
 - Relay smoke tests passed locally and through the current Cloudflare tunnel.
-- The latest game launch was checked after packaging.
+- The latest friend zip was checked for `manifest/default.json`, shared assets, Darkness Takeover mods, and the extract-first launcher at the zip root.
