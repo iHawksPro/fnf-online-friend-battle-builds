@@ -1,14 +1,37 @@
-# FNF Online Friend Battle
+# Hawks FNF Multiplayer Mod
 
-This repository packages the online multiplayer Friday Night Funkin' build and the relay server for the current test setup.
+This repository packages the online multiplayer Friday Night Funkin' test build, the Node.js relay server, and the current friend-test release files.
 
-The public GitHub copy uses local and generic defaults only. Set your own server address in the in-game menu before connecting across the internet.
+The public repository does not commit a public IP address or saved Cloudflare tunnel URL. The game build can read `online-server-url.txt`, and the in-game Online Battle menu also lets players edit the server URL before connecting.
+
+## Latest Friend Build
+
+Download the full ready-to-send Windows build from the Releases page:
+
+- `Hawks-FNF-Multiplayer-Darkness-Takeover-SEND-TO-FRIEND.zip`
+
+That zip contains the complete `Hawks FNF Multiplayer Mod` folder. Extract it and run `PsychEngine.exe`.
+
+## Included Mod Songs
+
+Darkness Takeover is installed and enabled in the latest build:
+
+- A Family Guy
+- Rooten Family
+- Fashioned Values
+- Death Lives
+- Twinkle
+- Final Fight
+- Airborne
+
+Both players should use the same release zip so their mod folder names and chart files match during Online Battle.
 
 ## Repository Contents
 
-- `server/` contains the Node.js relay source and startup files.
+- `server/` contains the relay server source, smoke test, and Windows launcher scripts.
 - `artifacts/FriendBattleServer.zip` is the ready-to-send server package.
-- The latest Windows game build is attached to the GitHub Release for this repository because the zip is too large for a normal Git commit.
+- `release-notes.md` summarizes the latest release.
+- `SHA256SUMS.txt` lists hashes for the uploaded zips.
 
 ## Server
 
@@ -19,16 +42,16 @@ npm install
 node server.js
 ```
 
-Or run `start-server.bat` on Windows.
+For quick testing, run:
 
-## Latest Build
+```powershell
+Start-Hawks-Cloudflare-Server.bat
+```
 
-Download the current game build from the Releases page for this repository:
+The Cloudflare launcher starts the local relay, creates a temporary tunnel, writes `cloudflare-server-url.txt`, and does not require committing a public server address.
 
-- `FNF-Online-Friend-Battle.zip`
+## Validation
 
-## Notes
-
-- Host players should forward TCP port `8787` to the server machine when using a public internet connection.
-- Both players should use the same latest build zip from the Release page.
-- The current multiplayer logic assigns the host to `P1` and the guest to `P2`.
+- Windows game build completed successfully.
+- Relay smoke tests passed locally and through the current Cloudflare tunnel.
+- The latest game launch was checked after packaging.

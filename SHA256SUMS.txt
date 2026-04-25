@@ -1,2 +1,2 @@
-f659bf6a592cba892214bf158d7a28ad1d79307c1abff15f3eed2428e1069266  FriendBattleServer.zip
-97d8dfa746cd614ad1cf5fe9abc7dbd38875af6d4929d96f99ee19b8c2fad3de  FNF-Online-Friend-Battle.zip
+6b0b82e3e5e32a86043ea3ed786e9bdf03f57e0cf2e183f4210a22176cd6ea04  Hawks-FNF-Multiplayer-Darkness-Takeover-SEND-TO-FRIEND.zip
+c1e9d024734f5711254f6af72993b30d6f7499c752f2799c3995e1e6f65c9bae  FriendBattleServer.zip

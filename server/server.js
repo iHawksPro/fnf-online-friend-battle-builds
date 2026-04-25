@@ -64,6 +64,37 @@ function getPlayer(ws) {
   return ws.player || null;
 }
 
+function lobbySnapshot() {
+  return [...rooms.values()]
+    .filter((room) => room.matchType === 'quick' && !room.started)
+    .sort((a, b) => a.createdAt - b.createdAt)
+    .map((room) => ({
+      code: room.code,
+      song: room.song,
+      difficulty: room.difficulty,
+      folder: room.folder,
+      playerCount: room.players.size,
+      readyCount: [...room.players.values()].filter((player) => player.ready).length,
+      ageSeconds: Math.max(0, Math.floor((now() - room.createdAt) / 1000)),
+      players: [...room.players.values()].map((player) => ({
+        name: player.name,
+        role: player.role,
+        ready: player.ready
+      }))
+    }));
+}
+
+function sendLobby(ws) {
+  send(ws, { type: 'lobby_snapshot', queue: lobbySnapshot() });
+}
+
+function broadcastLobby() {
+  const packet = { type: 'lobby_snapshot', queue: lobbySnapshot() };
+  for (const ws of wss.clients) {
+    send(ws, packet);
+  }
+}
+
 function roomSnapshot(room) {
   return {
     code: room.code,
@@ -99,10 +130,39 @@ function buildPlayer(ws, packet, role) {
 }
 
 function attachPlayer(ws, room, player) {
+  leave(ws, 'switch_room');
   ws.player = player;
   ws.roomCode = room.code;
   room.players.set(player.id, player);
   room.lastActive = now();
+}
+
+function detachPlayer(player) {
+  if (!player || !player.ws) return;
+  if (player.ws.player && player.ws.player.id === player.id) {
+    player.ws.player = null;
+    player.ws.roomCode = null;
+  }
+}
+
+function closeRoom(room, reason, except = null) {
+  if (!room || !rooms.has(room.code)) return;
+
+  rooms.delete(room.code);
+  for (const player of room.players.values()) {
+    if (player.ws !== except) {
+      send(player.ws, {
+        type: 'room_closed',
+        code: room.code,
+        reason,
+        message: reason === 'player_left'
+          ? 'Room closed because a player left.'
+          : 'Room closed.'
+      });
+    }
+    detachPlayer(player);
+  }
+  room.players.clear();
 }
 
 function resetReady(room) {
@@ -146,6 +206,7 @@ function createRoom(ws, packet, matchType = 'private') {
   rooms.set(code, room);
 
   send(ws, { type: 'room_created', selfId: player.id, room: roomSnapshot(room) });
+  broadcastLobby();
 }
 
 function joinExistingRoom(ws, packet, room) {
@@ -167,6 +228,7 @@ function joinExistingRoom(ws, packet, room) {
 
   send(ws, { type: 'room_joined', selfId: player.id, room: roomSnapshot(room) });
   broadcast(room, { type: 'player_joined', room: roomSnapshot(room) }, ws);
+  broadcastLobby();
 }
 
 function joinRoom(ws, packet) {
@@ -197,6 +259,7 @@ function updateSettings(ws, packet) {
   room.lastActive = now();
   resetReady(room);
   broadcast(room, { type: 'room_update', room: roomSnapshot(room), reason: 'settings_changed' });
+  broadcastLobby();
 }
 
 function setReady(ws, packet) {
@@ -207,6 +270,7 @@ function setReady(ws, packet) {
   player.ready = packet.ready === true;
   room.lastActive = now();
   broadcast(room, { type: 'room_update', room: roomSnapshot(room) });
+  broadcastLobby();
 
   if (room.players.size === 2 && [...room.players.values()].every((p) => p.ready) && !room.started) {
     room.started = true;
@@ -220,6 +284,7 @@ function setReady(ws, packet) {
       matchType: room.matchType,
       seed: room.seed
     });
+    broadcastLobby();
   }
 }
 
@@ -241,23 +306,31 @@ function relay(ws, packet) {
   broadcast(room, { ...packet, from: player.id, serverTime: now() }, ws);
 }
 
-function leave(ws) {
+function leave(ws, reason = 'player_left') {
   const player = getPlayer(ws);
   const room = player && rooms.get(ws.roomCode);
-  if (!room) return;
+  if (!room) {
+    ws.player = null;
+    ws.roomCode = null;
+    return;
+  }
 
+  const wasHost = player.id === room.hostId;
+  const shouldCloseRoom = room.started || room.matchType === 'quick' || wasHost;
   room.players.delete(player.id);
-  broadcast(room, { type: 'player_left', id: player.id });
+  detachPlayer(player);
 
   if (room.players.size === 0) {
     rooms.delete(room.code);
-  } else if (player.id === room.hostId) {
-    const nextHost = [...room.players.values()][0];
-    nextHost.role = 'host';
-    room.hostId = nextHost.id;
-    room.started = false;
-    broadcast(room, { type: 'room_update', room: roomSnapshot(room) });
+  } else if (shouldCloseRoom) {
+    broadcast(room, { type: 'player_left', id: player.id, reason });
+    closeRoom(room, reason, ws);
+  } else {
+    room.lastActive = now();
+    broadcast(room, { type: 'player_left', id: player.id, reason });
+    broadcast(room, { type: 'room_update', room: roomSnapshot(room), reason });
   }
+  broadcastLobby();
 }
 
 function handlePacket(ws, raw) {
@@ -295,6 +368,9 @@ function handlePacket(ws, raw) {
     case 'ready':
       setReady(ws, packet);
       break;
+    case 'lobby':
+      sendLobby(ws);
+      break;
     default:
       relay(ws, packet);
       break;
@@ -322,6 +398,7 @@ wss.on('connection', (ws) => {
   ws.on('message', (raw) => handlePacket(ws, raw.toString('utf8')));
   ws.on('close', () => leave(ws));
   send(ws, { type: 'hello', serverTime: now(), heartbeatMs: HEARTBEAT_MS });
+  sendLobby(ws);
 });
 
 setInterval(() => {
@@ -340,6 +417,7 @@ setInterval(() => {
         player.ws.close(1001, 'Room expired.');
       }
       rooms.delete(code);
+      broadcastLobby();
     }
   }
 }, HEARTBEAT_MS);

@@ -1,0 +1,5 @@
+server/node_modules/
+server/logs/
+server/cloudflare-server-url.txt
+server/server-live.*.log
+*.tmp
