@@ -28,6 +28,8 @@ Darkness Takeover is installed and enabled in the latest build:
 
 Both players should use the same release zip so their mod folder names and chart files match during Online Battle.
 
+The Online Battle song browser supports search: focus the song panel, press `/`, then type to filter songs. You can also click the Search box directly.
+
 ## Repository Contents
 
 - `server/` contains the relay server source, smoke test, and Windows launcher scripts.
