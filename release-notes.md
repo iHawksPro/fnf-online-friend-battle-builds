@@ -1,4 +1,4 @@
-# Darkness Takeover Friend Build
+# Song Search + Mod Fixes Friend Build
 
 ## Assets
 

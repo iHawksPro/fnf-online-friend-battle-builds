@@ -6,6 +6,8 @@ The public repository does not commit a public IP address or saved Cloudflare tu
 
 ## Latest Friend Build
 
+Latest release: `v2026.04.26-song-search-fixes`
+
 Download the full ready-to-send Windows build from the Releases page:
 
 - `Hawks-FNF-Multiplayer-Darkness-Takeover-SEND-TO-FRIEND.zip`
@@ -26,9 +28,11 @@ Darkness Takeover is installed and enabled in the latest build:
 - Final Fight
 - Airborne
 
-Both players should use the same release zip so their mod folder names and chart files match during Online Battle.
+Both players should use the same latest release zip so their mod folder names, chart files, stage assets, and Online Battle code match.
 
 The Online Battle song browser supports search: focus the song panel, press `/`, then type to filter songs. You can also click the Search box directly.
+
+This build also adds Kenny's opposite-side notes for Bloodbath Spanish Mix, removes the broken Chaos/Reign of Chaos spacebar dodge popup/death behavior, and restores the original Doubling Down hallway background.
 
 ## Repository Contents
 
