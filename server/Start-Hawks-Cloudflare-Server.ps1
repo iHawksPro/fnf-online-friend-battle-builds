@@ -142,9 +142,19 @@ $wsUrl = $httpsUrl -replace '^https:', 'wss:'
 $urlFile = Join-Path $serverDir 'cloudflare-server-url.txt'
 Set-Content -Path $urlFile -Value $wsUrl -Encoding ASCII
 
-$gameBin = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath((Join-Path $serverDir '..\..\fnf-psych-source-online\export\release\windows\bin'))
-if (Test-Path $gameBin) {
-  Set-Content -Path (Join-Path $gameBin 'online-server-url.txt') -Value $wsUrl -Encoding ASCII
+$workspaceRoot = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath((Join-Path $serverDir '..\..\..'))
+$gameUrlTargets = @(
+  (Join-Path $workspaceRoot 'Playable Build\Extracted'),
+  (Join-Path $workspaceRoot 'Source\fnf-psych-source-online\export\release\windows\bin'),
+  (Join-Path $serverDir '..\..\fnf-psych-source-online\export\release\windows\bin')
+)
+$updatedGameTargets = @()
+foreach ($target in $gameUrlTargets) {
+  $resolvedTarget = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($target)
+  if (Test-Path $resolvedTarget) {
+    Set-Content -Path (Join-Path $resolvedTarget 'online-server-url.txt') -Value $wsUrl -Encoding ASCII
+    $updatedGameTargets += $resolvedTarget
+  }
 }
 
 try {
@@ -160,8 +170,11 @@ Write-Host $wsUrl -ForegroundColor White
 Write-Host ""
 Write-Host "I copied it to your clipboard and saved it here:"
 Write-Host $urlFile
-if (Test-Path $gameBin) {
-  Write-Host "Also wrote it to the game folder as online-server-url.txt."
+if ($updatedGameTargets.Count -gt 0) {
+  Write-Host "Also wrote it to these game folders as online-server-url.txt:"
+  foreach ($target in $updatedGameTargets) {
+    Write-Host " - $target"
+  }
 }
 Write-Host ""
 Write-Host "Quick Tunnel URLs change every time this launcher starts."

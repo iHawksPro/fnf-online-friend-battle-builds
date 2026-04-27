@@ -60,19 +60,32 @@ function safeFolder(value) {
   return value === '' || value == null ? '' : (isSafeText(value, 1, 64) ? value : '');
 }
 
+function safeVoteSong(value, fallback = 'unknown') {
+  return isSafeText(value, 1, 64) ? value : fallback;
+}
+
+function normalizeSongPick(packet, fallbackSong = 'unknown', fallbackDifficulty = 'normal', fallbackFolder = '') {
+  return {
+    song: safeVoteSong(packet && packet.song, fallbackSong),
+    difficulty: safeDifficulty(packet && packet.difficulty != null ? packet.difficulty : fallbackDifficulty),
+    folder: safeFolder(packet && packet.folder != null ? packet.folder : fallbackFolder)
+  };
+}
+
 function getPlayer(ws) {
   return ws.player || null;
 }
 
 function lobbySnapshot() {
   return [...rooms.values()]
-    .filter((room) => room.matchType === 'quick' && !room.started)
+    .filter((room) => room.matchType === 'quick' && !room.started && room.phase !== 'voting')
     .sort((a, b) => a.createdAt - b.createdAt)
     .map((room) => ({
       code: room.code,
       song: room.song,
       difficulty: room.difficulty,
       folder: room.folder,
+      phase: room.phase,
       playerCount: room.players.size,
       readyCount: [...room.players.values()].filter((player) => player.ready).length,
       ageSeconds: Math.max(0, Math.floor((now() - room.createdAt) / 1000)),
@@ -86,6 +99,10 @@ function lobbySnapshot() {
 
 function sendLobby(ws) {
   send(ws, { type: 'lobby_snapshot', queue: lobbySnapshot() });
+  const room = ws.roomCode && rooms.get(ws.roomCode);
+  if (room) {
+    send(ws, { type: 'room_update', room: roomSnapshot(room), reason: 'lobby_requested' });
+  }
 }
 
 function broadcastLobby() {
@@ -96,6 +113,15 @@ function broadcastLobby() {
 }
 
 function roomSnapshot(room) {
+  const publicVote = (vote) => vote
+    ? {
+      noVote: vote.noVote === true,
+      song: vote.song,
+      difficulty: vote.difficulty,
+      folder: vote.folder
+    }
+    : null;
+
   return {
     code: room.code,
     hostId: room.hostId,
@@ -104,11 +130,17 @@ function roomSnapshot(room) {
     folder: room.folder,
     matchType: room.matchType,
     seed: room.seed,
+    started: room.started,
+    startAt: room.startAt,
+    phase: room.phase,
+    selectedVote: room.selectedVote || null,
     players: [...room.players.values()].map((player) => ({
       id: player.id,
       name: player.name,
       role: player.role,
       ready: player.ready,
+      finished: player.finished,
+      vote: publicVote(player.vote),
       score: player.score,
       misses: player.misses,
       combo: player.combo
@@ -122,6 +154,8 @@ function buildPlayer(ws, packet, role) {
     name: safeName(packet.name, role === 'host' ? 'Host' : 'Guest'),
     role,
     ready: false,
+    finished: false,
+    vote: null,
     score: 0,
     misses: 0,
     combo: 0,
@@ -165,9 +199,13 @@ function closeRoom(room, reason, except = null) {
   room.players.clear();
 }
 
-function resetReady(room) {
+function resetReady(room, clearVotes = true) {
   for (const player of room.players.values()) {
     player.ready = false;
+    player.finished = false;
+    if (clearVotes) {
+      player.vote = null;
+    }
     player.score = 0;
     player.misses = 0;
     player.combo = 0;
@@ -199,6 +237,7 @@ function createRoom(ws, packet, matchType = 'private') {
     createdAt: now(),
     lastActive: now(),
     started: false,
+    phase: 'lobby',
     startAt: 0
   };
 
@@ -218,7 +257,7 @@ function joinExistingRoom(ws, packet, room) {
     closeWithError(ws, 'room_full', 'That room already has two players.');
     return;
   }
-  if (room.started) {
+  if (room.started || room.phase === 'playing') {
     closeWithError(ws, 'room_started', 'That room already started.');
     return;
   }
@@ -238,7 +277,7 @@ function joinRoom(ws, packet) {
 
 function quickMatch(ws, packet) {
   for (const room of rooms.values()) {
-    if (room.matchType === 'quick' && !room.started && room.players.size < 2) {
+    if (room.matchType === 'quick' && !room.started && room.phase !== 'voting' && room.players.size < 2) {
       joinExistingRoom(ws, packet, room);
       return;
     }
@@ -250,22 +289,48 @@ function quickMatch(ws, packet) {
 function updateSettings(ws, packet) {
   const player = getPlayer(ws);
   const room = player && rooms.get(ws.roomCode);
-  if (!room || room.started) return;
+  if (!room || room.started || room.phase === 'voting') return;
 
   room.song = safeSong(packet.song);
   room.difficulty = safeDifficulty(packet.difficulty);
   room.folder = safeFolder(packet.folder);
   room.seed = makeId(8);
+  room.selectedVote = null;
   room.lastActive = now();
   resetReady(room);
   broadcast(room, { type: 'room_update', room: roomSnapshot(room), reason: 'settings_changed' });
   broadcastLobby();
 }
 
+function startMatch(room) {
+  room.started = true;
+  room.phase = 'playing';
+  room.startAt = now() + 3000;
+  room.selectedVote = null;
+  for (const player of room.players.values()) {
+    player.ready = true;
+    player.finished = false;
+    player.vote = null;
+    player.score = 0;
+    player.misses = 0;
+    player.combo = 0;
+  }
+  broadcast(room, {
+    type: 'match_start',
+    startAt: room.startAt,
+    song: room.song,
+    difficulty: room.difficulty,
+    folder: room.folder,
+    matchType: room.matchType,
+    seed: room.seed
+  });
+  broadcastLobby();
+}
+
 function setReady(ws, packet) {
   const player = getPlayer(ws);
   const room = player && rooms.get(ws.roomCode);
-  if (!room || room.started) return;
+  if (!room || room.started || room.phase === 'voting') return;
 
   player.ready = packet.ready === true;
   room.lastActive = now();
@@ -273,18 +338,153 @@ function setReady(ws, packet) {
   broadcastLobby();
 
   if (room.players.size === 2 && [...room.players.values()].every((p) => p.ready) && !room.started) {
-    room.started = true;
-    room.startAt = now() + 3000;
-    broadcast(room, {
-      type: 'match_start',
-      startAt: room.startAt,
-      song: room.song,
-      difficulty: room.difficulty,
-      folder: room.folder,
-      matchType: room.matchType,
-      seed: room.seed
-    });
+    startMatch(room);
+  }
+}
+
+function applyScore(player, packet) {
+  player.score = Number.isFinite(packet.score) ? Math.trunc(packet.score) : player.score;
+  player.misses = Number.isFinite(packet.misses) ? Math.trunc(packet.misses) : player.misses;
+  player.combo = Number.isFinite(packet.combo) ? Math.trunc(packet.combo) : player.combo;
+}
+
+function finishMatch(ws, packet) {
+  const player = getPlayer(ws);
+  const room = player && rooms.get(ws.roomCode);
+  if (!room || !room.started) return;
+
+  applyScore(player, packet);
+  player.finished = true;
+  player.ready = false;
+  room.lastActive = now();
+
+  broadcast(room, {
+    type: 'result',
+    from: player.id,
+    score: player.score,
+    misses: player.misses,
+    combo: player.combo,
+    serverTime: now()
+  }, ws);
+
+  if (room.players.size === 2 && [...room.players.values()].every((p) => p.finished)) {
+    room.started = false;
+    room.phase = 'voting';
+    room.startAt = 0;
+    room.selectedVote = null;
+    for (const p of room.players.values()) {
+      p.ready = false;
+      p.vote = null;
+    }
+    broadcast(room, { type: 'room_update', room: roomSnapshot(room), reason: 'match_finished' });
     broadcastLobby();
+  } else {
+    broadcast(room, { type: 'room_update', room: roomSnapshot(room), reason: 'player_finished' });
+  }
+}
+
+function normalizeVote(packet, room) {
+  const noVote = packet.noVote === true;
+  const fallbackSongs = Array.isArray(packet.fallbackSongs)
+    ? packet.fallbackSongs
+      .slice(0, 32)
+      .filter((entry) => entry && typeof entry === 'object')
+      .map((entry) => normalizeSongPick(entry, room.song, room.difficulty, room.folder))
+    : [];
+
+  if (noVote) {
+    return {
+      noVote: true,
+      song: 'No Vote',
+      difficulty: '',
+      folder: '',
+      fallbackSongs
+    };
+  }
+
+  return {
+    noVote: false,
+    ...normalizeSongPick(packet, room.song, room.difficulty, room.folder),
+    fallbackSongs
+  };
+}
+
+function voteKey(vote) {
+  return `${vote.song.toLowerCase()}|${vote.difficulty.toLowerCase()}|${vote.folder.toLowerCase()}`;
+}
+
+function pickRandom(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function resolveVotes(room) {
+  const votes = [...room.players.values()].map((player) => player.vote).filter(Boolean);
+  const songVotes = votes.filter((vote) => !vote.noVote);
+  let selected;
+  let resolution = 'vote';
+
+  if (songVotes.length === 0) {
+    const fallbackPool = [];
+    for (const vote of votes) {
+      if (Array.isArray(vote.fallbackSongs)) {
+        fallbackPool.push(...vote.fallbackSongs);
+      }
+    }
+    selected = fallbackPool.length > 0
+      ? pickRandom(fallbackPool)
+      : normalizeSongPick(room, room.song, room.difficulty, room.folder);
+    resolution = 'random_default';
+  } else {
+    const buckets = new Map();
+    for (const vote of songVotes) {
+      const key = voteKey(vote);
+      const bucket = buckets.get(key) || { count: 0, vote };
+      bucket.count += 1;
+      buckets.set(key, bucket);
+    }
+
+    const maxVotes = Math.max(...[...buckets.values()].map((bucket) => bucket.count));
+    const tied = [...buckets.values()].filter((bucket) => bucket.count === maxVotes);
+    selected = pickRandom(tied).vote;
+    resolution = tied.length > 1 ? 'tie_random' : 'vote';
+  }
+
+  room.song = safeSong(selected.song);
+  room.difficulty = safeDifficulty(selected.difficulty);
+  room.folder = safeFolder(selected.folder);
+  room.seed = makeId(8);
+  room.started = false;
+  room.phase = 'lobby';
+  room.startAt = 0;
+  room.selectedVote = {
+    song: room.song,
+    difficulty: room.difficulty,
+    folder: room.folder,
+    resolution
+  };
+  resetReady(room, true);
+  broadcast(room, {
+    type: 'room_update',
+    room: roomSnapshot(room),
+    reason: 'vote_resolved',
+    selectedSong: room.selectedVote
+  });
+  broadcastLobby();
+}
+
+function songVote(ws, packet) {
+  const player = getPlayer(ws);
+  const room = player && rooms.get(ws.roomCode);
+  if (!room || room.started || room.phase !== 'voting') return;
+
+  player.vote = normalizeVote(packet, room);
+  player.ready = false;
+  room.lastActive = now();
+
+  if (room.players.size === 2 && [...room.players.values()].every((p) => p.vote)) {
+    resolveVotes(room);
+  } else {
+    broadcast(room, { type: 'room_update', room: roomSnapshot(room), reason: 'vote_changed' });
   }
 }
 
@@ -297,9 +497,7 @@ function relay(ws, packet) {
   if (!allowed.has(packet.type)) return;
 
   if (packet.type === 'score') {
-    player.score = Number.isFinite(packet.score) ? Math.trunc(packet.score) : player.score;
-    player.misses = Number.isFinite(packet.misses) ? Math.trunc(packet.misses) : player.misses;
-    player.combo = Number.isFinite(packet.combo) ? Math.trunc(packet.combo) : player.combo;
+    applyScore(player, packet);
   }
 
   room.lastActive = now();
@@ -367,6 +565,12 @@ function handlePacket(ws, raw) {
       break;
     case 'ready':
       setReady(ws, packet);
+      break;
+    case 'finish_match':
+      finishMatch(ws, packet);
+      break;
+    case 'song_vote':
+      songVote(ws, packet);
       break;
     case 'lobby':
       sendLobby(ws);
