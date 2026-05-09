@@ -41,7 +41,11 @@ function closeWithError(ws, code, message) {
 }
 
 function isSafeText(value, min, max) {
-  return typeof value === 'string' && value.length >= min && value.length <= max && /^[\w .\-]+$/.test(value);
+  return typeof value === 'string'
+    && value.trim().length >= min
+    && value.length <= max
+    && !/[\\/\r\n\t\0]/.test(value)
+    && !value.includes('..');
 }
 
 function safeName(value, fallback) {

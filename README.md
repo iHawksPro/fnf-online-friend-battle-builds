@@ -6,9 +6,9 @@ The public repository does not commit a public IP address or saved Cloudflare tu
 
 ## Latest Friend Build
 
-Download the full ready-to-send Windows build from the Releases page:
+Download the full ready-to-send Windows build from the Releases page or use the local Downloads copy:
 
-- `Hawks-FNF-Multiplayer-SEND-TO-FRIEND.zip`
+- `Hawks-FNF-Multiplayer-All-Mods-No-Darkness-SEND-TO-FRIEND.zip`
 
 That zip contains the complete game files at the zip root. Extract the whole zip first, then run `! RUN HAWKS FNF.bat`.
 
@@ -21,15 +21,29 @@ The launcher checks that `manifest/default.json` and the shared assets are besid
 - Online 1v1 battles now return to the Online Battle hub instead of Freeplay.
 - Post-battle rematch voting keeps both players in the room with Vote Song and No Vote choices.
 - Player votes are shown in the room panel, and the relay handles one-vote, no-vote, and tie/random selection rules.
+- Wednesday's Infidelity now works through the relay with its apostrophe-containing mod folder name.
+- Smoke Em Out Struggle is included with Headache, Nerves, Release, Fading, and Dip.
+
+## Included Mods
+
+- Bloodbath Spanish Mix
+- Doubling Down
+- South Park Chaos
+- Tolkien Week
+- Silly Billy
+- Wednesday's Infidelity
+- Smoke Em Out Struggle
+
+Darkness Takeover is intentionally not included.
 
 Both players should use the same release zip so their mod folder names and chart files match during Online Battle.
 
 ## Repository Contents
 
 - `server/` contains the relay server source, smoke test, and Windows launcher scripts.
-- `artifacts/FriendBattleServer.zip` is the ready-to-send server package.
+- `artifacts/FriendBattleServer.zip` is the ready-to-send server package with no public IP hardcoded.
 - `release-notes.md` summarizes the latest release.
-- `SHA256SUMS.txt` lists hashes for the uploaded zips.
+- `SHA256SUMS.txt` lists hashes for the release zips.
 
 ## Server
 
@@ -51,5 +65,5 @@ The Cloudflare launcher starts the local relay, creates a temporary tunnel, writ
 ## Validation
 
 - Windows game build completed successfully.
-- Relay smoke tests passed locally and through the current Cloudflare tunnel.
-- The latest friend zip was checked for `manifest/default.json`, shared assets, mod content, and the extract-first launcher at the zip root.
+- Relay smoke tests passed locally, including Wednesday folder names, quick-lobby cleanup, and existing rematch coverage.
+- The latest friend zip was checked for `PsychEngine.exe`, `manifest/default.json`, Wednesday's Infidelity, Smoke Em Out Struggle, and no Darkness Takeover folder.

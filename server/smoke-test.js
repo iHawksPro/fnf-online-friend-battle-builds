@@ -60,10 +60,10 @@ async function privateRoomScenario() {
 
   host.send(JSON.stringify({ type: 'ready', ready: true }));
   await onceType(guest, 'room_update');
-  host.send(JSON.stringify({ type: 'update_settings', song: 'fresh', difficulty: 'normal', folder: 'Darkness Takeover' }));
-  const settings = await onceType(host, 'room_update', (packet) => packet.room && packet.room.song === 'fresh');
-  assert.strictEqual(settings.room.song, 'fresh');
-  assert.strictEqual(settings.room.folder, 'Darkness Takeover');
+  host.send(JSON.stringify({ type: 'update_settings', song: 'unknown suffering', difficulty: 'normal', folder: "Wednesday's Infidelity" }));
+  const settings = await onceType(host, 'room_update', (packet) => packet.room && packet.room.song === 'unknown suffering');
+  assert.strictEqual(settings.room.song, 'unknown suffering');
+  assert.strictEqual(settings.room.folder, "Wednesday's Infidelity");
   assert(settings.room.players.every((player) => player.ready === false));
 
   const hostStartPromise = onceType(host, 'match_start');

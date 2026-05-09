@@ -1,2 +1,2 @@
-43f8667910acd2f9eb0d062ae3838bb798cc10ca7fe6d9323e74724357b2535f  Hawks-FNF-Multiplayer-SEND-TO-FRIEND.zip
-ab3bad15b78352d210e463c42719c3265eceb7f74b963a1927a169d207176976  FriendBattleServer.zip
+ab6730ea165d8aa35503d8d84a28fceaa4869b2cb44d8ddd916ab412728d83b4  Hawks-FNF-Multiplayer-All-Mods-No-Darkness-SEND-TO-FRIEND.zip
+c050cb494ab87348d27ecccf9e58c9d9591fde0e9f2d7ad46abde85aa4737a89  artifacts/FriendBattleServer.zip
