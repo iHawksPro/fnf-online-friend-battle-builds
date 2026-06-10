@@ -13,8 +13,14 @@ HOW TO RUN
 
 2. Unzip this folder.
 
-3. For free online testing without port forwarding, double-click:
-   Start-Hawks-Cloudflare-Server.bat
+3. For free online testing without port forwarding:
+
+   Windows: double-click Start-Hawks-Cloudflare-Server.bat
+
+   Linux:   ./start-hawks-cloudflare-server.sh
+            (downloads cloudflared automatically if missing; pass --no-wait to
+            leave the server running in the background, and set
+            GAME_DIRS=/path/to/game to also write that build's online-server-url.txt)
 
 4. Keep the launcher window open while playing.
 
