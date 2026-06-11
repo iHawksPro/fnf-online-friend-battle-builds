@@ -1,0 +1,16 @@
+# Render.com blueprint: free-tier hosting for the relay server.
+# Deploy: render.com -> New -> Blueprint -> point it at this GitHub repo.
+# Free-tier caveat: the instance spins down after ~15 min with no
+# connections and cold-starts in ~30-60s when the first player connects.
+# Once a websocket is open it stays awake, so matches are never interrupted.
+# After deploy, put the public URL in online-server-url.txt as:
+#   wss://<your-service>.onrender.com
+services:
+  - type: web
+    name: hawks-fnf-relay
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /health
