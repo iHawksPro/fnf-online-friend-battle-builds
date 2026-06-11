@@ -14,6 +14,13 @@ The combined zip `Hawks-FNF-Multiplayer-All-Mods-Plus-Wasted-SEND-TO-FRIEND.zip`
 - Adds the FNF Wasted V3 mod (`mods/wasted`, song `wasted-v3` with normal and hard charts) as an addon zip and in the combined build.
 - Fixes the Wasted mod's stale `pack.json` (it still carried Last Chance V7 metadata) and sets `needsVoices` to false to match the shipped audio (vocals are baked into `Inst.ogg`; no `Voices.ogg` exists).
 - Renames the Wasted mod's week file from `weeks/LC.json` to `weeks/wasted-v3.json` — Bloodbath Spanish Mix also ships a `weeks/LC.json`, and Psych Engine keys weeks by filename, so the duplicate was silently skipped and `wasted-v3` never appeared in freeplay. Also sets the week's `difficulties` to `Normal, Hard` to match the shipped charts.
+- Makes `wasted-v3` actually playable on this build's Psych Engine 1.0.4 (the mod was written for 0.6.x and crashed within seconds):
+  - In Psych 1.0, Lua sprites and HScript `game.variables` share one namespace; the shader system's `game.variables["bloomEffect"]`-style assignments overwrote six same-named dummy sprites, so tweening them hit a shader with no `x` property and crashed ("The object does not have the property \"x\""). All shader variable keys are now prefixed `shdr_`.
+  - Replaced the removed `game.modchartSprites` API in `unfortunate_Shaders.lua` and `global_functions.lua` (the two on-screen HScript errors).
+  - `mirrordrug` tweened six `nada*` value-holder sprites that no script created (crash on Hard at 4:21); they are now created up front.
+  - Fixed case-mismatched `'Cleveland'` sprite references in `a.lua`, replaced the missing `characters/Oooooooooohhh` spritesheet with a blank dummy, and guarded a cross-script `updateShader()` call.
+  - The chart swapped boyfriend to `bf exe` at 31s, whose spritesheet is missing from every known copy of the mod (instant crash); remapped to `bf s`. Added the vanilla `bf`/`dad`/`gf` character JSONs the chart's other Change Character events need (the original standalone shipped them in `assets/`).
+  - Added silent `switch off` / `Radio Static` sound stubs (missing upstream).
 - Adds `server/start-hawks-cloudflare-server.sh` so the relay plus Cloudflare Quick Tunnel can be hosted natively on Linux.
 - Adds `run-hawks-fnf-linux.sh` to the game build for playing the Windows client through Wine on Linux.
 - Resets `online-server-url.txt` in the build to the local fallback (`ws://127.0.0.1:8787`) instead of an expired tunnel URL, per repository policy.
