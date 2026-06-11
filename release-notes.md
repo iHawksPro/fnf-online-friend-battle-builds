@@ -1,3 +1,39 @@
+# Hawks FNF Online — engine rebuild v1.0 (Windows + Linux)
+
+Full rebuild of the Hawks multiplayer client on stock Psych Engine 1.0.4 —
+now with a native Linux build and a permanently hosted relay server.
+
+## What's here
+- **Hawks-FNF-Windows-Engine.zip** — the game, Windows
+- **Hawks-FNF-Linux-Engine.tar.gz** — the game, native Linux
+- **Hawks-FNF-Mods-Pack1.zip** — Wednesday's Infidelity
+- **Hawks-FNF-Mods-Pack2.zip** — Bloodbath Spanish Mix, Doubling Down, Silly Billy, South Park Chaos, Tolkien Week, wasted
+
+Install: extract the engine for your OS, then extract BOTH mods packs into its
+`mods/` folder. See INSTALL.txt inside.
+
+## Online play
+- Quick match, private rooms with 6-char codes, live lobby with player OS
+  badges (Linux/Windows), ready-up flow, post-match song voting / rematch.
+- Connects automatically to the hosted relay (`wss://hawks-fnf-relay.onrender.com`)
+  — nobody hosts anything. If the first connect of the day fails, wait ~40s
+  and Reconnect (free-tier server waking up).
+- You'll be asked to choose a player name on your first visit to ONLINE.
+- NOTE: not cross-compatible in-match with the old 2025 Hawks build — both
+  players should use this release.
+
+## Mod fixes in this release (wasted-v3)
+- Fixed all missing/case-mismatched character files (errors + black death screen).
+- Rewrote the mod's stage-color helper for Psych 1.0.4 (sprite errors gone).
+- The shotgun section no longer insta-kills on a miss; the 24-of-26 quota
+  death at 3:34 is disabled (re-enable via SHOTGUN_QUOTA in a.lua).
+
+Known gaps (next releases): opponent strum lane rendering, tighter
+simultaneous song start.
+
+
+---
+
 # Hawks FNF Multiplayer Friend Build - Wasted V3 + Linux Server Hosting
 
 ## Assets

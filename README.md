@@ -4,9 +4,17 @@ This repository packages the online multiplayer Friday Night Funkin' test build,
 
 The public repository does not commit a public IP address or saved Cloudflare tunnel URL. The game build can read `online-server-url.txt`, and the in-game Online Battle menu also lets players edit the server URL before connecting. The default is local testing at `ws://127.0.0.1:8787`; the server tunnel launcher writes fresh Cloudflare URLs into the playable build folder when you start a tunnel.
 
-## Latest Friend Build
+## Latest Build — engine rebuild v1.0 (recommended)
 
-Download from the Releases page:
+Download from the Releases page (`engine-v1.0`): a full rebuild of the
+multiplayer client on stock Psych Engine 1.0.4, with **native Windows and
+Linux builds** and a permanently hosted relay (`wss://hawks-fnf-relay.onrender.com`
+— nobody hosts anything anymore). Grab the engine package for your OS plus
+both mods packs and follow the bundled `INSTALL.txt`. Old and new builds can
+share the lobby but cannot play matches against each other — both players
+should use `engine-v1.0`.
+
+## Legacy Friend Build (original 2025 client)
 
 - `Hawks-FNF-Multiplayer-All-Mods-No-Darkness-SEND-TO-FRIEND.zip` - the full game build (six mods).
 - `Hawks-FNF-Wasted-V3-Addon.zip` - adds the FNF Wasted V3 mod; extract it into the extracted game folder and let it overwrite `modsList.txt`.
