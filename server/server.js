@@ -80,6 +80,11 @@ function getPlayer(ws) {
   return ws.player || null;
 }
 
+// Optional client OS tag for lobby badges; old clients send nothing.
+function safePlatform(value) {
+  return ['windows', 'linux', 'mac'].includes(value) ? value : null;
+}
+
 function lobbySnapshot() {
   return [...rooms.values()]
     .filter((room) => room.matchType === 'quick' && !room.started && room.phase !== 'voting')
@@ -96,7 +101,8 @@ function lobbySnapshot() {
       players: [...room.players.values()].map((player) => ({
         name: player.name,
         role: player.role,
-        ready: player.ready
+        ready: player.ready,
+        platform: player.platform
       }))
     }));
 }
@@ -142,6 +148,7 @@ function roomSnapshot(room) {
       id: player.id,
       name: player.name,
       role: player.role,
+      platform: player.platform,
       ready: player.ready,
       finished: player.finished,
       vote: publicVote(player.vote),
@@ -156,6 +163,7 @@ function buildPlayer(ws, packet, role) {
   return {
     id: makeId(8),
     name: safeName(packet.name, role === 'host' ? 'Host' : 'Guest'),
+    platform: safePlatform(packet.platform),
     role,
     ready: false,
     finished: false,
