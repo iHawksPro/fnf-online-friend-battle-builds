@@ -1,4 +1,4 @@
 b11c7b1f6ef549c05ee37c464ad53cd88f7bea8245f81c8a8609f04455a91654  Hawks-FNF-Multiplayer-All-Mods-No-Darkness-SEND-TO-FRIEND.zip
-2c705b8be936e9d6c6df5f59dcfa861e13c6f84243f784f8829e79c8379d552a  Hawks-FNF-Wasted-V3-Addon.zip
-4c9d8e3136331e01fa349738451beb1be74ff0c420b527c63c37ee3357ca83dc  Hawks-FNF-Multiplayer-All-Mods-Plus-Wasted-SEND-TO-FRIEND.zip
+fb6596ba3f82586f15bebb061575b88d1ee240b407d5cd8278c7bcdd7c863a85  Hawks-FNF-Wasted-V3-Addon.zip
+28fb49092cd44d26ddcff67ba09213e7fe8532efc6ac5b055ef13744736889d9  Hawks-FNF-Multiplayer-All-Mods-Plus-Wasted-SEND-TO-FRIEND.zip
 88f4aa7d6508b1166801c35a83c69d0e3c32f5a4344ef832c04fc3db3224006d  artifacts/FriendBattleServer.zip
