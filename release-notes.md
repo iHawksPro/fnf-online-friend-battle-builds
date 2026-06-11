@@ -12,6 +12,16 @@ now with a native Linux build and a permanently hosted relay server.
 Install: extract the engine for your OS, then extract BOTH mods packs into its
 `mods/` folder. See INSTALL.txt inside.
 
+## One-file downloads (Google Drive)
+
+Prefer a single download with everything baked in (engine + all 7 mods)?
+- Windows: https://drive.google.com/open?id=1yggwI_dOYtkB5pqPD_lGO1zxFIaWxQux
+- Linux: https://drive.google.com/open?id=1JDP5JFDSod5yUJ42MBt5z2HP4yWaBT7N
+
+(Too big for GitHub's 2 GiB release-file limit, hence Drive. SHA256 hashes are
+in the Drive folder. Google will show a "can't scan for viruses" warning for
+files this size — choose "download anyway".)
+
 ## Online play
 - Quick match, private rooms with 6-char codes, live lobby with player OS
   badges (Linux/Windows), ready-up flow, post-match song voting / rematch.
