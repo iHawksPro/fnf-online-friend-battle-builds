@@ -4,15 +4,21 @@ This repository packages the online multiplayer Friday Night Funkin' test build,
 
 The public repository does not commit a public IP address or saved Cloudflare tunnel URL. The game build can read `online-server-url.txt`, and the in-game Online Battle menu also lets players edit the server URL before connecting. The default is local testing at `ws://127.0.0.1:8787`; the server tunnel launcher writes fresh Cloudflare URLs into the playable build folder when you start a tunnel.
 
-## Latest Build — engine rebuild v1.0 (recommended)
+## Latest Build — engine v1.1: TRUE VERSUS (recommended)
 
-Download from the Releases page (`engine-v1.0`): a full rebuild of the
-multiplayer client on stock Psych Engine 1.0.4, with **native Windows and
-Linux builds** and a permanently hosted relay (`wss://hawks-fnf-relay.onrender.com`
-— nobody hosts anything anymore). Grab the engine package for your OS plus
-both mods packs and follow the bundled `INSTALL.txt`. Old and new builds can
-share the lobby but cannot play matches against each other — both players
-should use `engine-v1.0`.
+Download from the Releases page (`engine-v1.1`): **real 1v1** — the host
+plays BF's side, the other player IS the boss on the left, both sides driven
+live by real inputs (the opponent's side never auto-plays; their misses
+visibly scroll past). Song starts are synchronized over the relay. Built on
+stock Psych Engine 1.0.4 with **native Windows and Linux builds** and a
+permanently hosted relay (`wss://hawks-fnf-relay.onrender.com` — nobody
+hosts anything anymore).
+
+Easiest install: the one-file Google Drive bundles (engine + all 7 mods) —
+links in `release-notes.md` and on the release page. Otherwise grab the
+engine package for your OS plus both mods packs from `engine-v1.0` (mods are
+unchanged) and follow the bundled `INSTALL.txt`. **Both players need v1.1
+for versus**; against older clients a match falls back to score-compare.
 
 ## Legacy Friend Build (original 2025 client)
 

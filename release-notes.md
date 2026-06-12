@@ -1,3 +1,39 @@
+# Hawks FNF Online — engine v1.1: TRUE VERSUS (Windows + Linux)
+
+One player on each side, for real. The host plays BF's lanes on the right,
+the other player IS the boss on the left — both sides driven live by real
+people. No more "everyone plays the same notes and compares scores".
+
+## Versus mode (new in v1.1)
+- **Each player owns a side.** Whoever creates the room (or hosts the quick
+  match) plays BF; the joiner plays the opponent. The VS splash tells you
+  your side before the song starts.
+- **The other side never auto-plays.** Their lanes light up when they
+  actually hit; their missed notes visibly scroll past dead. You'll see
+  "OPPONENT MISSED!" when they flub one, and their voice track cuts out.
+- **Your screen, your view.** Your playable lanes, your health bar (your
+  character sits on your end of it), your score. Their live score/combo/
+  misses stream across the top.
+- **Synced start.** Both games agree on an exact shared start moment over
+  the relay — a slow-loading PC just makes the other side wait a moment,
+  then both count in together. Hits are matched by exact chart time, so
+  lag can only delay the light-up on their side, never hit a wrong note.
+
+## Downloads
+- One-file bundles with everything (engine + all 7 mods), updated in place —
+  same links as before:
+  - Windows: https://drive.google.com/open?id=1yggwI_dOYtkB5pqPD_lGO1zxFIaWxQux
+  - Linux: https://drive.google.com/open?id=1JDP5JFDSod5yUJ42MBt5z2HP4yWaBT7N
+- GitHub release `engine-v1.1`: engine-only packages (Windows zip, Linux
+  tar.gz). Mods packs are unchanged — grab them from `engine-v1.0` if you
+  need them.
+- **Both players need v1.1 for versus.** Against an older client the match
+  degrades to the old score-compare behavior (and starts ~15s late).
+
+Known gaps (next releases): pause sync between players mid-song.
+
+---
+
 # Hawks FNF Online — engine rebuild v1.0 (Windows + Linux)
 
 Full rebuild of the Hawks multiplayer client on stock Psych Engine 1.0.4 —
