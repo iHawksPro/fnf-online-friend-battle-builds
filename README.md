@@ -14,11 +14,13 @@ stock Psych Engine 1.0.4 with **native Windows and Linux builds** and a
 permanently hosted relay (`wss://hawks-fnf-relay.onrender.com` — nobody
 hosts anything anymore).
 
-Easiest install: the one-file Google Drive bundles (engine + all 7 mods) —
-links in `release-notes.md` and on the release page. Otherwise grab the
-engine package for your OS plus both mods packs from `engine-v1.0` (mods are
-unchanged) and follow the bundled `INSTALL.txt`. **Both players need v1.1
-for versus**; against older clients a match falls back to score-compare.
+Easiest install: the one-file Google Drive bundles (engine + all 8 mods,
+now including **Mario's Madness V2 — 41 songs** with its note gimmicks and
+real stages) — links in `release-notes.md` and on the release page.
+Otherwise grab the engine package for your OS plus Mods-Pack1/2 from
+`engine-v1.0` and Mods-Pack3 (Mario's Madness) from `engine-v1.1`, and
+follow the bundled `INSTALL.txt`. **Both players need v1.1 for versus**;
+against older clients a match falls back to score-compare.
 
 ## Legacy Friend Build (original 2025 client)
 

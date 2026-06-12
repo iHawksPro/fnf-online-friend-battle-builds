@@ -19,14 +19,26 @@ people. No more "everyone plays the same notes and compares scores".
   then both count in together. Hits are matched by exact chart time, so
   lag can only delay the light-up on their side, never hit a wrong note.
 
+## Mario's Madness V2 — 41 songs added (2026-06-12)
+The full Mario's Madness V2 tracklist (including the V1 "-old" versions),
+ported from the source build into the mods folder: every chart, the Mario
+note skins, the gimmick notes with their real mechanics (poison drain, bomb
+damage, bullet bills that shoot back, Pico's ammo counter, jumpscares, the
+rising flood, coins and rings), the real stage backgrounds extracted from
+the source for all 29 stages, subtitles and camera direction. Heavy
+source-coded setpieces (shader effects, minigame cutaways) are not ported.
+Grab **Hawks-FNF-Mods-Pack3.zip** or the refreshed one-file bundles below —
+both players need the mod for these songs in online versus.
+
 ## Downloads
-- One-file bundles with everything (engine + all 7 mods), updated in place —
+- One-file bundles with everything (engine + all 8 mods), updated in place —
   same links as before:
   - Windows: https://drive.google.com/open?id=1yggwI_dOYtkB5pqPD_lGO1zxFIaWxQux
   - Linux: https://drive.google.com/open?id=1JDP5JFDSod5yUJ42MBt5z2HP4yWaBT7N
 - GitHub release `engine-v1.1`: engine-only packages (Windows zip, Linux
-  tar.gz). Mods packs are unchanged — grab them from `engine-v1.0` if you
-  need them.
+  tar.gz) plus **Mods-Pack3 (Mario's Madness V2)**. Mods packs 1 and 2 are
+  on `engine-v1.0` (Pack2 was refreshed with the wasted-v3 stacked-note
+  fix).
 - **Both players need v1.1 for versus.** Against an older client the match
   degrades to the old score-compare behavior (and starts ~15s late).
 
