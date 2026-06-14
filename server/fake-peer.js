@@ -47,13 +47,17 @@ let songPos = 0;
 let score = 0;
 let combo = 0;
 
-ws.on('open', () => {
-  log('connected. (free-tier relay can take ~40s to wake on first connect of the day)');
+function joinLobby() {
   if (HOST_MODE) {
     send({ type: 'create_room', name: NAME, song: SONG, difficulty: DIFF, folder: FOLDER, platform: 'linux' });
   } else {
     send({ type: 'quick_match', name: NAME, song: SONG, difficulty: DIFF, folder: FOLDER, platform: 'linux' });
   }
+}
+
+ws.on('open', () => {
+  log('connected. (free-tier relay can take ~40s to wake on first connect of the day)');
+  joinLobby();
 });
 
 ws.on('message', (raw) => {
@@ -78,8 +82,10 @@ ws.on('message', (raw) => {
       break;
     case 'player_left':
     case 'room_closed':
-      log(`opponent left / room closed (${p.reason || ''}) — back to idle`);
+      log(`opponent left / room closed (${p.reason || ''}) — re-queuing in 1.5s`);
       stopFakePlay();
+      songPos = 0; score = 0; combo = 0;
+      setTimeout(joinLobby, 1500);   // hop back into the lobby for the next match
       break;
     default:
       log('recv', p.type);
