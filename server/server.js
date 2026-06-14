@@ -587,6 +587,12 @@ function handlePacket(ws, raw) {
     case 'lobby':
       sendLobby(ws);
       break;
+    case 'ping':
+      // Clock-sync probe: reply straight back to the sender (not broadcast) so
+      // the client can measure RTT and correct its server-time estimate.
+      // ct = the client's send timestamp, echoed verbatim.
+      send(ws, { type: 'pong', ct: packet.ct, serverTime: now() });
+      break;
     default:
       relay(ws, packet);
       break;
